@@ -1,7 +1,7 @@
 
 ``sopel`` arXiv Module
 ----------------------
-Simple IRC-arXiv interface via the ``sopel`` (<https://sopel.chat>`_) bot. It
+Simple IRC-arXiv interface via the `sopel <https://sopel.chat>`_ bot. It
 will trigger on arXiv URLs for papers, as well as the common arXiv ID notation,
 fetching the paper title, author information, and first few words of the
 abstract. You can also use a command to search the arXiv, using their search
