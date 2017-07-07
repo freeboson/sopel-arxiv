@@ -16,8 +16,7 @@ import requests
 arxiv_catch = re.compile(
     r"""
         (http[s]?://[^/]*xxx\.lanl\.gov/[a-z]+/|    # old domain
-         http[s]?://[^/]*arxiv\.org/[a-z]+/|        # main
-         arxiv:)                                    # common shorthand
+         http[s]?://[^/]*arxiv\.org/[a-z]+/)        # main
         (                                           # arXiv id in group(2)
             \d{4}\.\d{4,5}                          # new and newer fmts
         |
@@ -54,7 +53,7 @@ def httpsify(url):
 def setup(bot):
     if not bot.memory.contains('url_callbacks'):
         bot.memory['url_callbacks'] = tools.SopelMemory()
-    bot.memory['url_callbacks'][arxiv_catch] = info
+    bot.memory['url_callbacks'][arxiv_catch] = url_info
 
 def shutdown(bot):
     del bot.memory['url_callbacks'][arxiv_catch]
@@ -140,9 +139,13 @@ def print_summary(bot, input=None, arxiv_id=None, include_link=True):
 
     bot.say(clipped)
 
-@rule('.*(arxiv:|xxx\.lanl\.gov\/[a-z]+\/|arxiv\.org\/[a-z]+\/)(\d{4}\.\d{4,5}|[a-z\-\.]+/\d{7}).*')
-def info(bot, trigger, found_match=None):
+@rule('.*(xxx\.lanl\.gov\/[a-z]+\/|arxiv\.org\/[a-z]+\/)(\d{4}\.\d{4,5}|[\w\-\.]+/\d{7}).*')
+def url_info(bot, trigger, found_match=None):
     match = found_match or trigger
     print_summary(bot, arxiv_id=match.group(2), include_link=False)
 
+@rule('.*arxiv:(\d{4}\.\d{4,5}|[\w\-\.]+/\d{7}).*')
+def info(bot, trigger, found_match=None):
+    match = found_match or trigger
+    print_summary(bot, arxiv_id=match.group(1), include_link=True)
 
