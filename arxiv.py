@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 '''
 arXiv.py -- sopel arXiv Module
-Copyright 2016 Sujeet Akula (sujeet@freeboson.org)
+Copyright 2017 Sujeet Akula (sujeet@freeboson.org)
 MIT License
 '''
 
-from sopel import web, tools
+from sopel import tools, web
 from sopel.module import rule, commands, example
 import re, feedparser
 import sys
@@ -19,9 +19,7 @@ arxiv_catch = re.compile(
     re.X)
 
 # Base api query url
-base_url = 'http://export.arxiv.org/api/query?';
-
-request = 'search_query={}&start=0&max_results=1'
+base_url = 'https://export.arxiv.org/api/query'
 
 feedparser._FeedParserMixin.namespaces['http://a9.com/-/spec/opensearch/1.1/'] = 'opensearch'
 feedparser._FeedParserMixin.namespaces['http://arxiv.org/schemas/atom'] = 'arxiv'
@@ -41,8 +39,17 @@ def shutdown(bot):
 
 def get_arxiv(query):
 
-    url = base_url + request.format(web.quote(query))
-    xml = web.get(url)
+    request = {
+        'start' : 0,
+        'max_results' : 1,
+        'search_query' : query
+    }
+
+    xml = requests.get(base_url,
+                params=request,
+                timeout=40,
+                headers=web.default_headers).text
+
     feed = feedparser.parse(xml)
 
     if int(feed.feed.opensearch_totalresults) < 1:
