@@ -48,7 +48,7 @@ no_newlines = re.compile(r'\n')
 http = re.compile(r'http:')
 
 def httpsify(url):
-    http.sub('https:', url)
+    return http.sub('https:', url)
 
 def setup(bot):
     if not bot.memory.contains('url_callbacks'):
