@@ -1,9 +1,11 @@
-#!/usr/bin/env python
-'''
-arXiv.py -- sopel arXiv Module
-Copyright 2017 Sujeet Akula (sujeet@freeboson.org)
-MIT License
-'''
+# coding=utf-8
+"""
+    arXiv.py -- sopel arXiv Module
+
+    Copyright 2017 Sujeet Akula (sujeet@freeboson.org)
+    MIT License
+
+"""
 
 from sopel import tools, web
 from sopel.module import rule, commands, example
