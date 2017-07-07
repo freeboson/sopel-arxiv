@@ -45,10 +45,11 @@ id_filter = re.compile(
 collab_check = re.compile(r'\s(?:Collaboration)|(?:Group).*', flags=re.IGNORECASE)
 
 no_newlines = re.compile(r'\n')
-http = re.compile(r'http:')
+no_http = re.compile(r'http:')
+no_trailing_version = re.compile(r'v\d+$')
 
-def httpsify(url):
-    return http.sub('https:', url)
+def clean_url(url):
+    return no_trailing_version.sub('', no_http.sub('https:', url))
 
 def setup(bot):
     if not bot.memory.contains('url_callbacks'):
@@ -98,7 +99,7 @@ def get_arxiv(query):
     title = entry.title
     abstract = no_newlines.sub(' ', entry.summary)
 
-    return (arxivid, authors, title, abstract, httpsify(abs_link))
+    return (arxivid, authors, title, abstract, clean_url(abs_link))
 
 @commands('arxiv')
 @example('.arxiv 1304.5526')
@@ -114,6 +115,11 @@ def print_summary(bot, input=None, arxiv_id=None, include_link=True):
 
     try:
         (arxiv_id, authors, title, abstract, url) = get_arxiv(query)
+        bot.say(str(arxiv_id))
+        bot.say(str(authors))
+        bot.say(str(title))
+        bot.say(str(abstract))
+        bot.say(str(url))
     except:
         return bot.say("[arXiv] Could not lookup " + query + " in the arXiv.")
 
