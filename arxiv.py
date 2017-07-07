@@ -11,6 +11,7 @@ from sopel import tools, web
 from sopel.module import rule, commands, example
 import re, feedparser
 import sys
+import requests
 
 arxiv_catch = re.compile(
     r"""
