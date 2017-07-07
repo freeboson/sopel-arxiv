@@ -115,11 +115,6 @@ def print_summary(bot, input=None, arxiv_id=None, include_link=True):
 
     try:
         (arxiv_id, authors, title, abstract, url) = get_arxiv(query)
-        bot.say(str(arxiv_id))
-        bot.say(str(authors))
-        bot.say(str(title))
-        bot.say(str(abstract))
-        bot.say(str(url))
     except:
         return bot.say("[arXiv] Could not lookup " + query + " in the arXiv.")
 
