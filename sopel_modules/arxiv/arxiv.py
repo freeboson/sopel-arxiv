@@ -2,16 +2,33 @@
 """
     arXiv.py -- sopel arXiv Module
 
-    Copyright 2017 Sujeet Akula (sujeet@freeboson.org)
+    Copyright 2018 Sujeet Akula (sujeet@freeboson.org)
     MIT License
 
 """
 
-from sopel import tools, web
-from sopel.module import rule, commands, example
-import re, feedparser
+
+from __future__ import unicode_literals, absolute_import, division, print_function
+
+import re
+import feedparser
 import sys
 import requests
+
+from sopel import module
+from sopel.tools import SopelMemory
+from sopel.web import default_headers as HEADERS
+
+
+def configure(config):
+    pass
+
+
+def def setup(bot):
+    if not bot.memory.contains('url_callbacks'):
+        bot.memory['url_callbacks'] = tools.SopelMemory()
+    bot.memory['url_callbacks'][arxiv_catch] = url_info
+
 
 arxiv_catch = re.compile(
     r"""
@@ -38,8 +55,8 @@ id_filter = re.compile(
         |
             [\w\-\.]+/\d{7}                         # old format
         )
-        (v\d+){,1}                                  # get rid of version
-        [/]{,1}                                     # "   "   "  trailing slash
+        (?:v\d+)?                                   # get rid of version
+        [/]?                                        # "   "   "  trailing slash
     """, re.X)
 
 collab_check = re.compile(r'\s(?:Collaboration)|(?:Group).*', flags=re.IGNORECASE)
@@ -48,16 +65,14 @@ no_newlines = re.compile(r'\n')
 no_http = re.compile(r'http:')
 no_trailing_version = re.compile(r'v\d+$')
 
+
 def clean_url(url):
     return no_trailing_version.sub('', no_http.sub('https:', url))
 
-def setup(bot):
-    if not bot.memory.contains('url_callbacks'):
-        bot.memory['url_callbacks'] = tools.SopelMemory()
-    bot.memory['url_callbacks'][arxiv_catch] = url_info
 
 def shutdown(bot):
     del bot.memory['url_callbacks'][arxiv_catch]
+
 
 def get_arxiv(query):
 
@@ -70,7 +85,7 @@ def get_arxiv(query):
     xml = requests.get(base_url,
                 params=request,
                 timeout=40,
-                headers=web.default_headers).text
+                headers=HEADERS).text
 
     feed = feedparser.parse(xml)
 
@@ -101,8 +116,9 @@ def get_arxiv(query):
 
     return (arxivid, authors, title, abstract, clean_url(abs_link))
 
-@commands('arxiv')
-@example('.arxiv 1304.5526')
+
+@module.commands('arxiv')
+@module.example('.arxiv 1304.5526')
 def print_summary(bot, input=None, arxiv_id=None, include_link=True):
 
     if arxiv_id is not None:
@@ -140,12 +156,14 @@ def print_summary(bot, input=None, arxiv_id=None, include_link=True):
 
     bot.say(clipped)
 
-@rule('.*(xxx\.lanl\.gov\/[a-z]+\/|arxiv\.org\/[a-z]+\/)(\d{4}\.\d{4,5}|[\w\-\.]+/\d{7}).*')
+
+@module.rule('.*(xxx\.lanl\.gov\/[a-z]+\/|arxiv\.org\/[a-z]+\/)(\d{4}\.\d{4,5}|[\w\-\.]+/\d{7}).*')
 def url_info(bot, trigger, found_match=None):
     match = found_match or trigger
     print_summary(bot, arxiv_id=match.group(2), include_link=False)
 
-@rule('.*arxiv:(\d{4}\.\d{4,5}|[\w\-\.]+/\d{7}).*')
+
+@module.rule('.*arxiv:(\d{4}\.\d{4,5}|[\w\-\.]+/\d{7}).*')
 def info(bot, trigger, found_match=None):
     match = found_match or trigger
     print_summary(bot, arxiv_id=match.group(1), include_link=True)

@@ -9,8 +9,12 @@ syntax, where it will give you the same info for the first result.
 
 Installation
 ------------
-Just put ``arxiv.py`` into one of the appropriate ``modules`` directories for
-your bot, e.g. ``~/.sopel/modules``.
+Install via pip (not currently on PyPI)::
+
+$ pip install git+https://github.com/freeboson/sopel-arxiv
+
+This should install into the `sopel_modules` namespace of your `site-packages`.
+Add `--user` to not install system-wide.
 
 Examples
 --------
@@ -25,4 +29,5 @@ Basic usage (my ``sopel`` bot is ``dirac`` on freenode)::
 <sujeet> Did you guys see arxiv:hep-th/0503249? It looks fascinating!
 <dirac> [arXiv:hep-th/0503249] P. J. Fox et al., "Supersplit Supersymmetry" :: The possible existence of an exponentially large number of vacua in string theory behooves one to consider possibilities beyond our traditional notions of naturalness. Such an approach to […] http://arxiv.org/abs/hep-th/0503249v2
 
+Note the usage of the `au:` operator provided by arXiv.
 
