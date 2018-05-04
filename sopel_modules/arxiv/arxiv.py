@@ -135,26 +135,23 @@ def print_summary(bot, input=None, arxiv_id=None, include_link=True):
         return bot.say("[arXiv] Could not lookup " + query + " in the arXiv.")
 
     if include_link:
+        # no need to put id here since url is given
         arxiv_summary = "[arXiv] " + authors + ', "' \
                         + title + '" :: ' + abstract
-
         long_summary = arxiv_summary + " " + url
-        if len(long_summary) > 300:
-            ending = '[…] ' + url
-            clipped = arxiv_summary[:(300-len(ending))] + ending
-        else:
-            clipped = long_summary
+        ending = '[…] ' + url
     else:
         arxiv_summary = "[arXiv:" + arxiv_id + "] " + authors + ', "' \
                         + title + '" :: ' + abstract
+        long_summary = arxiv_summary # no difference here
+        ending = '[…]'
 
-        if len(arxiv_summary) > 300:
-            ending = '[…]'
-            clipped = arxiv_summary[:(300-len(ending))] + ending
-        else:
-            clipped = arxiv_summary
+    if len(long_summary) > 800:
+        clipped = arxiv_summary[:(800-len(ending))] + ending
+    else:
+        clipped = long_summary
 
-    bot.say(clipped)
+    bot.say(clipped, max_messages=2)
 
 
 @module.rule('.*(xxx\.lanl\.gov\/[a-z]+\/|arxiv\.org\/[a-z]+\/)(\d{4}\.\d{4,5}|[\w\-\.]+/\d{7}).*')
